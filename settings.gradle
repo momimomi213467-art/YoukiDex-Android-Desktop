@@ -15,5 +15,5 @@ dependencyResolutionManagement {
     }
 }
 
-rootProject.name = "YoukiDex"
+rootProject.name = "HyperOS"
 include ':app'
