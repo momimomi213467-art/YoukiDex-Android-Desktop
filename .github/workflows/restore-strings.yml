@@ -1,0 +1,33 @@
+name: Restore HyperOS strings
+
+on:
+  workflow_dispatch:
+  push:
+    paths:
+      - '.github/workflows/restore-strings.yml'
+
+permissions:
+  contents: write
+
+jobs:
+  restore:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Download upstream strings and rename app
+        run: |
+          curl -fsSL "https://raw.githubusercontent.com/mrYouki/YoukiDex-Android-Desktop/main/app/src/main/res/values/strings.xml" -o app/src/main/res/values/strings.xml
+          sed -i 's/<string name="app_name">Youki DEX<\/string>/<string name="app_name">HyperOS<\/string>/' app/src/main/res/values/strings.xml
+          sed -i 's/Set Youki DEX as your default/Set HyperOS as your default/' app/src/main/res/values/strings.xml
+          wc -c app/src/main/res/values/strings.xml
+          grep app_name app/src/main/res/values/strings.xml | head -3
+
+      - name: Commit if changed
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add app/src/main/res/values/strings.xml
+          git diff --cached --quiet && echo "No changes" && exit 0
+          git commit -m "Restore full strings.xml with app_name=HyperOS"
+          git push
